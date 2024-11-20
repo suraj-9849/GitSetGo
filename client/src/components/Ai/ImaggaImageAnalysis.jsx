@@ -20,7 +20,7 @@ const HealthInsightsAnalyzer = () => {
   const performAnalysis = async () => {
     setLoading(true);
     try {
-      // Placeholder for actual analysis logic
+      
       await new Promise(resolve => setTimeout(resolve, 2000));
       setAnalysis({
         disease: "Potential Skin Condition",
@@ -37,7 +37,7 @@ const HealthInsightsAnalyzer = () => {
     }
   };
 
-  // Determine recommended specialist based on tags
+  
   const getRecommendedSpecialist = () => {
     if (!response || !response.tags) return "General Practitioner";
 

@@ -7,7 +7,6 @@ export default function Home() {
   return (  
    
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-[15vh]">
-      {/* Hero Section */}
       <div className="text-center mb-16">
         <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
           Healthcare at Your Fingertips
@@ -18,7 +17,7 @@ export default function Home() {
       </div>
 
 
-      {/* Features */}
+     
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
         <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
           <Video className="h-12 w-12 text-rose-600 mb-4" />
@@ -41,7 +40,7 @@ export default function Home() {
           <p className="text-gray-600">Services available in multiple local languages</p>
         </div>
       </div>
-      {/* How it Works */}
+      
       <div className="bg-white rounded-2xl p-8 shadow-sm">
         <h2 className="text-3xl font-bold text-center mb-12">How It Works</h2>
         <div className="grid md:grid-cols-3 gap-8">
