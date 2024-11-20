@@ -3,7 +3,6 @@ import Groq from "groq-sdk";
 import { collection, doc, getDocs, getFirestore, query, setDoc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
-// Initialize Groq client
 const groq = new Groq({
   apiKey: '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',
   dangerouslyAllowBrowser: true

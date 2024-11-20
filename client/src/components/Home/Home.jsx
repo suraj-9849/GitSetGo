@@ -1,24 +1,21 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Video, Stethoscope, FileText, Languages } from 'lucide-react';
-export default function Home() {
-  const navigate = useNavigate();
 
-  return (  
-   
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-[15vh]">
-      {/* Hero Section */}
-      <div className="text-center mb-16">
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-          Healthcare at Your Fingertips
-        </h1>
-        <p className="text-xl text-gray-600 mb-8">
-          Connect with qualified doctors from the comfort of your home
-        </p>
+export default function Home() {
+
+  return (
+    <div className="mx-auto ">
+      <div className="mb-16 w-">
+        <video
+          src="./video.mp4"
+          width="100%"
+          autoPlay
+          loop
+          muted
+          height="100%"
+        />
       </div>
 
-
-      {/* Features */}
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
         <div className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
           <Video className="h-12 w-12 text-rose-600 mb-4" />
@@ -41,7 +38,7 @@ export default function Home() {
           <p className="text-gray-600">Services available in multiple local languages</p>
         </div>
       </div>
-      {/* How it Works */}
+
       <div className="bg-white rounded-2xl p-8 shadow-sm">
         <h2 className="text-3xl font-bold text-center mb-12">How It Works</h2>
         <div className="grid md:grid-cols-3 gap-8">
