@@ -1,32 +1,52 @@
 import React, { useState } from 'react';
 import Groq from "groq-sdk";
 import Navbar from '../navbar/navbar';
-// Initialize Groq client
+
+const doctorSpecialties = [
+    'Cardiologist', 'Neurologist', 'Pediatrics', 'Oncologist', 'Dermatologist', 
+    'Orthopedics', 'Psychiatry', 'Endocrinologist', 'Gastroenterologist', 
+    'Nephrologist', 'Pulmonologist', 'Rheumatologist', 'Hematologist', 
+    'Infectious Disease', 'General Surgery', 'Urologist', 'Ophthalmologist', 
+    'Gynecologist', 'Anesthesiologist', 'Emergency Medicine'
+];
+
 const groq = new Groq({
     apiKey: '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',
     dangerouslyAllowBrowser: true
 });
 
-const Search = () => {
+const AskGroq = () => {
     const [symptoms, setSymptoms] = useState('');
     const [result, setResult] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
+    const findBestDoctorMatch = (suggestedDoctor) => {
+        // Normalize the suggested doctor name
+        const normalizedSuggestion = suggestedDoctor.toLowerCase().replace(/\s+/g, '');
+        
+        // Find the best match in the doctorSpecialties array
+        const bestMatch = doctorSpecialties.find(specialty => 
+            specialty.toLowerCase().replace(/\s+/g, '').includes(normalizedSuggestion) ||
+            normalizedSuggestion.includes(specialty.toLowerCase().replace(/\s+/g, ''))
+        );
+
+        return bestMatch || doctorSpecialties[0]; // Default to first specialty if no match
+    };
+
     const handleConsultClick = (doctorType) => {
         console.log(doctorType);
-        // You can add additional functionality here like navigation or opening a modal
     };
 
     const analyzeSymptoms = async (symptomDescription) => {
         const prompt = `Analyze these symptoms and provide a medical classification. 
-    Symptoms: "${symptomDescription}"
-    
-    Respond ONLY with a JSON object in this exact format:
-    {
-      "disease": "name of the likely condition",
-      "doctor": "medical specialty that should be consulted , has to only one word "
-    }`;
+        Symptoms: "${symptomDescription}"
+        
+        Respond ONLY with a JSON object in this exact format:
+        {
+          "disease": "name of the likely condition",
+          "doctor": "suggested medical specialty"
+        }`;
 
         try {
             const completion = await groq.chat.completions.create({
@@ -35,24 +55,26 @@ const Search = () => {
                 temperature: 0.2,
                 max_tokens: 1000,
                 top_p: 1,
-                stream: false  // Changed to false for simpler handling
+                stream: false
             });
 
             const responseContent = completion.choices[0]?.message?.content || '';
 
-            // Find JSON in the response
             const jsonMatch = responseContent.match(/\{[\s\S]*\}/);
             if (!jsonMatch) {
                 throw new Error("No valid JSON found in response");
             }
 
-            // Parse the JSON
             try {
                 const parsedResult = JSON.parse(jsonMatch[0]);
-                if (!parsedResult.disease || !parsedResult.doctor) {
-                    throw new Error("Invalid response format");
-                }
-                return parsedResult;
+                
+                // Find the best matching doctor specialty
+                const bestDoctor = findBestDoctorMatch(parsedResult.doctor);
+
+                return {
+                    disease: parsedResult.disease,
+                    doctor: bestDoctor
+                };
             } catch (parseError) {
                 throw new Error("Failed to parse response as JSON");
             }
@@ -64,13 +86,11 @@ const Search = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Input validation
         if (!symptoms.trim()) {
             setError('Please enter your symptoms');
             return;
         }
 
-        // Reset states
         setLoading(true);
         setError('');
         setResult(null);
@@ -165,7 +185,6 @@ const Search = () => {
                                     </div>
                                 </div>
 
-                                {/* New Consult Doctor Card */}
                                 <div className="bg-blue-50 rounded-lg p-6 border border-blue-200">
                                     <h2 className="text-xl font-semibold text-gray-900 mb-4">Ready to Consult a Doctor?</h2>
                                     <p className="text-gray-700 mb-4">
@@ -187,4 +206,4 @@ const Search = () => {
     );
 };
 
-export default Search;
+export default AskGroq;
