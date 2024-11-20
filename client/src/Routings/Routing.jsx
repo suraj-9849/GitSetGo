@@ -5,6 +5,7 @@ import Login from '../components/Authpages/Login'
 import Signup from '../components/Authpages/Signup'
 import VideoRoom from '../components/VideoRoom/VideoRoom'
 import Profile from '../components/Profile/Profile'
+import ImaggaImageAnalysis from '../components/Ai/ImaggaImageAnalysis'
 
 function Routing() {
   return (
@@ -15,6 +16,7 @@ function Routing() {
        <Route path="/login" element={<Login />} />
        <Route path="/sign-up" element={<Signup />} />
         <Route path='/videoCam' element={<VideoRoom />} />
+        <Route path='/image' element={<ImaggaImageAnalysis />} />
       </Routes>
     </div>
   )
