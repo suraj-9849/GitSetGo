@@ -1,6 +1,6 @@
 import React from 'react'
 import "./index.css"
-import Routing from './routings/Routing'
+import Routing from './Routings/Routing'
 import Navbar from './components/navbar/navbar'
 
 
