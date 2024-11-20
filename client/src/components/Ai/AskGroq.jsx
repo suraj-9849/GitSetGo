@@ -21,7 +21,7 @@ const AskGroq = () => {
     const [result, setResult] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [doctorsList, setDoctorsList] = useState([]); // State to store doctors list
+    const [doctorsList, setDoctorsList] = useState([]); 
 
     const findBestDoctorMatch = (suggestedDoctor) => {
         const normalizedSuggestion = suggestedDoctor.toLowerCase().replace(/\s+/g, '');
@@ -35,27 +35,24 @@ const AskGroq = () => {
         const db = getFirestore();
     
         try {
-            // Step 1: Get all doctor UIDs from the specialization collection
+            
             const specialistRef = collection(db, specialist.toUpperCase());
             const specialistSnapshot = await getDocs(specialistRef);
     
             if (specialistSnapshot.empty) {
                 console.log(`No doctors found under specialization: ${specialist}`);
-                setDoctorsList([]); // Clear the list if no doctors found
+                setDoctorsList([]); 
                 return;
             }
     
-            // Step 2: Get all doctor details in this specialization
             const doctorDetails = specialistSnapshot.docs.map(doc => doc.data());
     
-            // Debug: Log the fetched doctor details
             console.log("Fetched doctor details:", doctorDetails);
     
-            // Step 3: Set the doctors list to state
             setDoctorsList(doctorDetails);
         } catch (error) {
             console.error("Error fetching doctors:", error);
-            setDoctorsList([]); // Clear the list on error
+            setDoctorsList([]); 
         }
     };
     
@@ -220,7 +217,7 @@ const AskGroq = () => {
                             </div>
                         )}
 
-                        {/* Display the list of doctors */}
+                        
                         {doctorsList.length > 0 && (
                             <div className="mt-8 space-y-4">
                                 <h3 className="text-2xl font-semibold text-gray-900">Doctors in {result?.doctor} Specialization</h3>

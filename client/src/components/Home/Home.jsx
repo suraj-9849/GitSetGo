@@ -38,7 +38,6 @@ export default function Home() {
           <p className="text-gray-600">Services available in multiple local languages</p>
         </div>
       </div>
-
       <div className="bg-white rounded-2xl p-8 shadow-sm">
         <h2 className="text-3xl font-bold text-center mb-12">How It Works</h2>
         <div className="grid md:grid-cols-3 gap-8">

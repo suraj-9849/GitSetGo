@@ -57,7 +57,7 @@ const googleLogo = document.querySelector('img[src="https://www.gstatic.com/imag
         className="text-white hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white p-2 rounded-full transition-colors"
         aria-label="Translate"
       >
-        <Globe size={24} />
+        <Globe className="h-5 w-5 text-black" />
       </button>
 
       {isModalOpen && (
