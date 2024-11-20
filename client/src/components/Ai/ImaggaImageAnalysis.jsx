@@ -37,6 +37,29 @@ const HealthInsightsAnalyzer = () => {
     }
   };
 
+  // Determine recommended specialist based on tags
+  const getRecommendedSpecialist = () => {
+    if (!response || !response.tags) return "General Practitioner";
+
+    const tagToSpecialistMap = {
+      "skin": "Dermatologist",
+      "eye": "Ophthalmologist",
+      "heart": "Cardiologist",
+    };
+
+    for (const tag of response.tags) {
+      const specialist = tagToSpecialistMap[tag.tag.en.toLowerCase()];
+      if (specialist) {
+        return specialist;
+      }
+
+      
+    }
+
+    return "General Practitioner";
+  };
+
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden">

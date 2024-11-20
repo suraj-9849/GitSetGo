@@ -21,26 +21,12 @@ const INDIAN_LANGUAGES = [
 ];
 
 const MEDICAL_SPECIALIZATIONS = [
-  'Cardiology',
-  'Neurology',
-  'Pediatrics',
-  'Oncology',
-  'Dermatology',
-  'Orthopedics',
-  'Psychiatry',
-  'Endocrinology',
-  'Gastroenterology',
-  'Nephrology',
-  'Pulmonology',
-  'Rheumatology',
-  'Hematology',
-  'Infectious Disease',
-  'General Surgery',
-  'Urology',
-  'Ophthalmology',
-  'Gynecology',
-  'Anesthesiology',
-  'Emergency Medicine'
+    'Cardiologist', 'Neurologist', 'Pediatrics', 'Oncologist', 'Dermatologist', 
+    'Orthopedics', 'Psychiatry', 'Endocrinologist', 'Gastroenterologist', 
+    'Nephrologist', 'Pulmonologist', 'Rheumatologist', 'Hematologist', 
+    'Infectious Disease', 'General Surgery', 'Urologist', 'Ophthalmologist', 
+    'Gynecologist', 'Anesthesiologist', 'Emergency Medicine'
+
 ];
 
 export default function Signup() {

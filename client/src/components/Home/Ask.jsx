@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import Groq from "groq-sdk";
+import { collection, doc, getDocs, getFirestore, query, setDoc } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 
 // Initialize Groq client
 const groq = new Groq({
@@ -13,10 +15,54 @@ const Search = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleConsultClick = (doctorType) => {
-    console.log(doctorType);
-    // You can add additional functionality here like navigation or opening a modal
-  };
+  const handleConsultClick = async (doctorType) => {
+    const specialist = doctorType;
+
+    const db = getFirestore();
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+
+    if (!currentUser) {
+        console.error("No user logged in.");
+        return;
+    }
+
+    try {
+        // 1. Get all doctors' UIDs from the specialization collection
+        const specializationRef = collection(db, specialist.toUpperCase());
+        const specializationQuery = query(specializationRef);
+        const specializationSnapshot = await getDocs(specializationQuery);
+
+        if (specializationSnapshot.empty) {
+            console.log(`No doctors found under specialization: ${specialist}`);
+            return;
+        }
+
+        const doctorUIDs = specializationSnapshot.docs.map(doc => doc.id);
+
+        // 2. Update each doctor's document in the "doctors" collection
+        for (const doctorUID of doctorUIDs) {
+            const doctorDocRef = doc(db, "doctors", doctorUID);
+
+            // Add incoming request subcollection
+            const incomingRequestRef = collection(doctorDocRef, "incoming requests");
+            const newRequestDocRef = doc(incomingRequestRef, currentUser.uid); // Use current user's UID as doc ID
+
+            await setDoc(newRequestDocRef, {
+                requestId: currentUser.uid, // Add additional details if needed
+                timestamp: new Date(),
+                status: "pending", // Example additional field
+            });
+
+            console.log(`Added request to doctor UID: ${doctorUID}`);
+        }
+
+        console.log("All requests added successfully.");
+    } catch (error) {
+        console.error("Error consulting specialist:", error);
+    }
+};
+
 
   const analyzeSymptoms = async (symptomDescription) => {
     const prompt = `Analyze these symptoms and provide a medical classification. 
