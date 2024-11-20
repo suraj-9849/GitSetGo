@@ -1,7 +1,16 @@
-export default function App() {
+import React from 'react'
+import "./index.css"
+import Routing from './routings/Routing'
+import Navbar from './components/navbar/navbar'
+
+
+function App() {
   return (
-    <h1 className="text-3xl font-bold underline">
-      Hello world!
-    </h1>
+    <div className='overflow-hidden montserrat '>
+      <Navbar/> 
+      <Routing/>
+    </div>
   )
 }
+
+export default App
