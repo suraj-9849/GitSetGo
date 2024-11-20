@@ -99,16 +99,13 @@ const ImaggaImageAnalysis = () => {
       if (specialist) {
         return specialist;
       }
+
+      
     }
 
     return "General Practitioner";
   };
 
-  const handleConsultSpecialist = () => {
-    const specialist = getRecommendedSpecialist();
-    console.log(`Consulting with: ${specialist}`); // Debug log
-    // Add your consultation logic here
-  };
 
   return (
     <div className="max-w-4xl mx-auto p-6">

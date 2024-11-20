@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import Groq from "groq-sdk";
 import Navbar from '../navbar/navbar';
+import { getFirestore, collection, getDocs } from 'firebase/firestore';
 
 const doctorSpecialties = [
-    'Cardiologist', 'Neurologist', 'Pediatrics', 'Oncologist', 'Dermatologist', 
-    'Orthopedics', 'Psychiatry', 'Endocrinologist', 'Gastroenterologist', 
-    'Nephrologist', 'Pulmonologist', 'Rheumatologist', 'Hematologist', 
-    'Infectious Disease', 'General Surgery', 'Urologist', 'Ophthalmologist', 
+    'Cardiologist', 'Neurologist', 'Pediatrics', 'Oncologist', 'Dermatologist',
+    'Orthopedics', 'Psychiatry', 'Endocrinologist', 'Gastroenterologist',
+    'Nephrologist', 'Pulmonologist', 'Rheumatologist', 'Hematologist',
+    'Infectious Disease', 'General Surgery', 'Urologist', 'Ophthalmologist',
     'Gynecologist', 'Anesthesiologist', 'Emergency Medicine'
 ];
 
@@ -20,23 +21,44 @@ const AskGroq = () => {
     const [result, setResult] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [doctorsList, setDoctorsList] = useState([]); // State to store doctors list
 
     const findBestDoctorMatch = (suggestedDoctor) => {
-        // Normalize the suggested doctor name
         const normalizedSuggestion = suggestedDoctor.toLowerCase().replace(/\s+/g, '');
-        
-        // Find the best match in the doctorSpecialties array
         const bestMatch = doctorSpecialties.find(specialty => 
             specialty.toLowerCase().replace(/\s+/g, '').includes(normalizedSuggestion) ||
             normalizedSuggestion.includes(specialty.toLowerCase().replace(/\s+/g, ''))
         );
-
-        return bestMatch || doctorSpecialties[0]; // Default to first specialty if no match
+        return bestMatch || doctorSpecialties[0];
     };
-
-    const handleConsultClick = (doctorType) => {
-        console.log(doctorType);
+    const handleConsultClick = async (specialist) => {
+        const db = getFirestore();
+    
+        try {
+            // Step 1: Get all doctor UIDs from the specialization collection
+            const specialistRef = collection(db, specialist.toUpperCase());
+            const specialistSnapshot = await getDocs(specialistRef);
+    
+            if (specialistSnapshot.empty) {
+                console.log(`No doctors found under specialization: ${specialist}`);
+                setDoctorsList([]); // Clear the list if no doctors found
+                return;
+            }
+    
+            // Step 2: Get all doctor details in this specialization
+            const doctorDetails = specialistSnapshot.docs.map(doc => doc.data());
+    
+            // Debug: Log the fetched doctor details
+            console.log("Fetched doctor details:", doctorDetails);
+    
+            // Step 3: Set the doctors list to state
+            setDoctorsList(doctorDetails);
+        } catch (error) {
+            console.error("Error fetching doctors:", error);
+            setDoctorsList([]); // Clear the list on error
+        }
     };
+    
 
     const analyzeSymptoms = async (symptomDescription) => {
         const prompt = `Analyze these symptoms and provide a medical classification. 
@@ -67,8 +89,6 @@ const AskGroq = () => {
 
             try {
                 const parsedResult = JSON.parse(jsonMatch[0]);
-                
-                // Find the best matching doctor specialty
                 const bestDoctor = findBestDoctorMatch(parsedResult.doctor);
 
                 return {
@@ -147,7 +167,7 @@ const AskGroq = () => {
                                 type="submit"
                                 disabled={loading}
                                 className={`w-full py-3 px-6 rounded-lg font-medium transition-all duration-200
-                ${loading
+                                    ${loading
                                         ? 'bg-gray-400 cursor-not-allowed'
                                         : 'bg-blue-600 hover:bg-blue-700 text-white'
                                     } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
@@ -197,6 +217,23 @@ const AskGroq = () => {
                                         Consult {result.doctor} Specialist
                                     </button>
                                 </div>
+                            </div>
+                        )}
+
+                        {/* Display the list of doctors */}
+                        {doctorsList.length > 0 && (
+                            <div className="mt-8 space-y-4">
+                                <h3 className="text-2xl font-semibold text-gray-900">Doctors in {result?.doctor} Specialization</h3>
+                                <ul className="space-y-4">
+                                    {doctorsList.map((doctor, index) => (
+                                        <li key={index} className="bg-gray-50 p-4 rounded-lg shadow-md">
+                                            <h4 className="text-xl font-semibold">{doctor.displayName}</h4>
+                                            <p className="text-gray-700">{doctor.email}</p>
+                                            <p className="text-gray-700">{doctor.hospital}</p>
+                                            <p className="text-gray-700">Languages: {doctor.languages.join(', ')}</p>
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
                         )}
                     </div>

@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { db } from '../Firebase/firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { Bell, Mail, Phone, Hospital, Award, Globe2 } from 'lucide-react';
 
 const Profile = () => {
   const [doctor, setDoctor] = useState(null);
   const [user, setUser] = useState(null);
+  
+  // Step 1: Fetch current user and doctor profile
   useEffect(() => {
     const auth = getAuth();
     const currentUser = auth.currentUser;
@@ -32,6 +34,27 @@ const Profile = () => {
     fetchDoctorProfile();
   }, []);
 
+  // Step 2: Handle "Incoming Requests" click
+  const handleIncomingRequests = async () => {
+    if (!doctor) return; // Ensure doctor data is available
+
+    try {
+      const incomingRequestsRef = collection(db, 'doctors', doctor.uid, 'incoming requests');
+      const incomingRequestsSnapshot = await getDocs(incomingRequestsRef);
+      
+      if (incomingRequestsSnapshot.empty) {
+        console.log('No incoming requests.');
+        return;
+      }
+
+      incomingRequestsSnapshot.forEach((doc) => {
+        console.log('Request:', doc.data()); // Logs the incoming request details
+      });
+    } catch (error) {
+      console.error('Error fetching incoming requests:', error);
+    }
+  };
+
   if (!doctor) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -47,7 +70,7 @@ const Profile = () => {
         <h1 className="text-3xl font-bold text-gray-900">Your Profile</h1>
         <button 
           className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
-          onClick={() => window.location.href = '/requests'}
+          onClick={handleIncomingRequests}
         >
           <Bell className="h-4 w-4" />
           Incoming Requests
