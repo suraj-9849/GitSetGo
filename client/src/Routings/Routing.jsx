@@ -5,16 +5,18 @@ import Home from '../components/Home/Home'
 import Login from '../components/Authpages/Login'
 import Signup from '../components/Authpages/Signup'
 
+import VideoRoom from '../components/VideoRoom/VideoRoom'
+
 function Routing() {
   return (
     <div>
-         <Routes>
-
+      <Routes>
        <Route path="/" element={<Home />} />
        <Route path="/profile" element={<Profile />} />
        <Route path="/login" element={<Login />} />
        <Route path="/sign-up" element={<Signup />} />
-         </Routes>
+        <Route path='/videoCam' element={<VideoRoom />} />
+      </Routes>
     </div>
   )
 }

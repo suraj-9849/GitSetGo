@@ -5,9 +5,9 @@ import { Video, Stethoscope, FileText, Languages } from 'lucide-react';
 export default function Home() {
   const navigate = useNavigate();
 
-  return (
+  return (  
    
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-[20vh]">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-[15vh]">
       {/* Hero Section */}
       <div className="text-center mb-16">
         <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
@@ -23,6 +23,7 @@ export default function Home() {
           Start Consultation
         </button>
       </div>
+
 
       {/* Features */}
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
