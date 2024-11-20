@@ -1,6 +1,6 @@
 import { io } from 'socket.io-client';
 
-const URL = 'http://localhost:3001';
+const URL = 'tester-311-backend.vercel.app';
 
 export const socket = io(URL, {
   autoConnect: true,
