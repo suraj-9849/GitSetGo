@@ -1,3 +1,4 @@
+// api/index.js
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -5,10 +6,11 @@ const cors = require('cors');
 
 const app = express();
 app.use(cors());
+
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "tester311.vercel.app", 
+    origin: "tester311.vercel.app",
     methods: ["GET", "POST"]
   }
 });
@@ -64,10 +66,12 @@ io.on('connection', (socket) => {
   });
 });
 
-app.get("/",(req,res)=>{
-    res.send("Hello Baburao")
-})
+// This is important for Vercel - export the app and server
+module.exports = server;
 
-server.listen(3001, () => {
-  console.log('Server running on port 3001');
-});
+// Only listen when running directly (not on Vercel)
+if (process.env.NODE_ENV !== 'production') {
+  server.listen(3001, () => {
+    console.log('Server running on port 3001');
+  });
+}
