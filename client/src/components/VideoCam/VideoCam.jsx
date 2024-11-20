@@ -27,7 +27,7 @@ function VideoCam() {
   return (
     <div className="homepage-container">
       <div className="homepage-content">
-        <h1 className="homepage-title">Welcome to Video Calling App</h1>
+        <h1 className="homepage-title">Initiate Video Call with Client</h1>
         <p className="homepage-subtitle">
           Start a video call with a randomly generated Room ID
         </p>

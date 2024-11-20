@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../Firebase/firebase";
-import { doc, getDoc, collection, getDocs, deleteDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, collection, getDocs, deleteDoc, setDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
-import { Bell, Mail, Phone, Hospital, Award, Globe2 } from "lucide-react";
+import { Bell, Phone } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
+  const navigate=useNavigate();
   const [doctor, setDoctor] = useState(null);
   const [user, setUser] = useState(null);
   const [incomingRequests, setIncomingRequests] = useState([]);
+  const [currentClients, setCurrentClients] = useState([]);  // State for current clients
   const [showRequests, setShowRequests] = useState(false);
 
   // Step 1: Fetch current user and doctor profile
@@ -36,7 +39,36 @@ const Profile = () => {
     fetchDoctorProfile();
   }, []);
 
-  // Step 2: Handle "Incoming Requests" click
+  // Step 2: Fetch Current Clients
+  useEffect(() => {
+    const fetchCurrentClients = async () => {
+      if (!doctor) return;
+
+      try {
+        const currentClientsRef = collection(db, "doctors", doctor.uid, "current_clients");
+        const currentClientsSnapshot = await getDocs(currentClientsRef);
+
+        if (currentClientsSnapshot.empty) {
+          console.log("No current clients.");
+          setCurrentClients([]);
+          return;
+        }
+
+        const clients = [];
+        currentClientsSnapshot.forEach((doc) => {
+          clients.push({ id: doc.id, ...doc.data() });
+        });
+
+        setCurrentClients(clients);
+      } catch (error) {
+        console.error("Error fetching current clients:", error);
+      }
+    };
+
+    fetchCurrentClients();
+  }, [doctor]);
+
+  // Step 3: Handle "Incoming Requests" click
   const handleIncomingRequests = async () => {
     if (!doctor) return;
 
@@ -62,31 +94,42 @@ const Profile = () => {
     }
   };
 
-  // Step 3: Handle accept and reject actions
+  // Step 4: Handle accept and reject actions
   const handleAcceptRequest = async (requestId) => {
     try {
+      console.log("Accepting request:", requestId);
       const requestRef = doc(db, "doctors", doctor.uid, "incoming requests", requestId);
-
-      // Example: Move the request to an "accepted requests" collection
+  
       const requestDoc = await getDoc(requestRef);
+      if (!requestDoc.exists()) {
+        console.error("Request document does not exist.");
+        return;
+      }
+  
       const requestData = requestDoc.data();
-      const acceptedRequestsRef = collection(db, "doctors", doctor.uid, "accepted requests");
-      await updateDoc(requestRef, { status: "accepted" });
-
-      console.log("Request accepted:", requestData);
-
-      // Remove from UI
+      console.log("Request Data:", requestData);
+  
+      const currentClientsRef = doc(db, "doctors", doctor.uid, "current_clients", requestId);
+      console.log("Current Clients Ref Path:", currentClientsRef.path);
+  
+      await setDoc(currentClientsRef, requestData);
+      console.log("Request successfully added to current_clients.");
+  
+      await deleteDoc(requestRef);
+      console.log("Request successfully removed from incoming requests.");
+  
       setIncomingRequests((prev) => prev.filter((req) => req.id !== requestId));
     } catch (error) {
-      console.error("Error accepting request:", error);
+      console.error("Error handling accept request:", error);
     }
   };
+  
 
   const handleRejectRequest = async (requestId) => {
     try {
       const requestRef = doc(db, "doctors", doctor.uid, "incoming requests", requestId);
 
-      // Example: Delete the request from Firestore
+      // Delete the request from "incoming requests"
       await deleteDoc(requestRef);
 
       console.log("Request rejected.");
@@ -96,6 +139,12 @@ const Profile = () => {
     } catch (error) {
       console.error("Error rejecting request:", error);
     }
+  };
+
+  // Handle starting a video call
+  const handleStartVideoCall = (clientId) => {
+    console.log(`Starting video call with client: ${clientId}`);
+    navigate('/videocam');
   };
 
   if (!doctor) {
@@ -146,7 +195,7 @@ const Profile = () => {
           ) : (
             incomingRequests.map((request) => (
               <div key={request.id} className="p-4 border-b last:border-b-0">
-                <p className="mb-2">Name: {request.name}</p>
+                <p className="mb-2">Name: {request.id}</p>
                 <div className="flex gap-4">
                   <button
                     onClick={() => handleAcceptRequest(request.id)}
@@ -166,6 +215,26 @@ const Profile = () => {
           )}
         </div>
       )}
+
+      {/* Current Clients Section */}
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        <h3 className="text-xl font-bold mb-4">Current Clients</h3>
+        {currentClients.length === 0 ? (
+          <p>No current clients.</p>
+        ) : (
+          currentClients.map((client) => (
+            <div key={client.id} className="p-4 border-b last:border-b-0">
+              <p className="mb-2">Name: {client.id}</p>
+              <button
+                onClick={() => handleStartVideoCall(client.id)}
+                className="bg-blue-500 text-white px-4 py-2 rounded"
+              >
+                Start Video Call
+              </button>
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 };
