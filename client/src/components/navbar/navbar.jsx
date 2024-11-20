@@ -40,11 +40,8 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Desktop Menu */}
+       
           <div className="hidden md:flex items-center space-x-8">
-            <Link to="/consultation" className="text-gray-600 hover:text-rose-600">
-              Find Doctor
-            </Link>
             <Link to="/image" className="text-gray-600 hover:text-rose-600">
               WoundDetection
             </Link>
@@ -52,7 +49,7 @@ export default function Navbar() {
               Check Symptoms
             </Link>
             
-            {/* Google Translate Component */}
+         
             <div className="relative">
               <GoogleTranslate />
             </div>
@@ -94,7 +91,7 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* Mobile menu button */}
+         
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
@@ -106,7 +103,6 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile menu */}
       {isOpen && (
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
@@ -129,8 +125,8 @@ export default function Navbar() {
               Check Symptoms
             </Link>
             
-            {/* Google Translate Component for Mobile */}
-            <div className="px-3 py-2">
+            
+            <div className="bg-slate-950">
               <GoogleTranslate />
             </div>
 
