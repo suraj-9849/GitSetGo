@@ -11,9 +11,11 @@ function RoomPage() {
   const zpRef = useRef(null);
   const videoContainerRef = useRef(null);
   const [joined, setJoined] = useState(false);
-  const [callType, setCallType] = useState(""); // State to store the call type
+  const [callType, setCallType] = useState("");
+  const audioChunks = useRef([]);
+  const [audioURL, setAudioURL] = useState(null);
+  const recorderRef = useRef(null);
 
-  // Initialize ZegoUIKit and join room on component mount
   const myMeeting = (type) => {
     const appID = APP_ID;
     const serverSecret = SECRET;
@@ -50,40 +52,79 @@ function RoomPage() {
       maxUsers: type === "one-on-one" ? 2 : 10,
       onJoinRoom: () => {
         setJoined(true);
+        startRecording(); // Start audio recording when joining the room
       },
       onLeaveRoom: () => {
+        stopRecording(); // Stop audio recording on leaving the room
         navigate("/");
       },
     });
   };
 
-  // Handle exit from the room
-  const handleExit = () => {
-    if (zpRef.current) {
-      zpRef.current.destroy();
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+
+      recorder.ondataavailable = (event) => {
+        audioChunks.current.push(event.data);
+      };
+
+      recorder.onstop = () => {
+        const audioBlob = new Blob(audioChunks.current, { type: "audio/wav" });
+        const url = URL.createObjectURL(audioBlob);
+        setAudioURL(url);
+
+        // Optionally, allow the user to download the audio file
+        const a = document.createElement("a");
+        a.style.display = "none";
+        a.href = url;
+        a.download = "conversation.wav";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      };
+
+      recorder.start();
+      recorderRef.current = recorder;
+    } catch (error) {
+      console.error("Failed to start recording:", error);
     }
-    navigate("/");
   };
 
-  // On component mount, extract call type from location and initialize meeting
+  const stopRecording = () => {
+    if (recorderRef.current) {
+      recorderRef.current.stop();
+      recorderRef.current = null;
+    }
+  };
+
+  const handleExit = () => {
+    if (zpRef.current) {
+      zpRef.current.destroy(); // Clean up ZegoUIKit instance
+    }
+    stopRecording(); // Stop recording before navigating away
+    navigate("/"); // Navigate back to the homepage or desired route
+  };
+  
+
   useEffect(() => {
     const query = new URLSearchParams(location.search);
     const type = query.get("type");
 
-    setCallType(type); // Update state with call type
+    setCallType(type);
   }, [location.search]);
 
-  // Initialize meeting after callType state is set
   useEffect(() => {
     if (callType) {
       myMeeting(callType);
     }
 
-    // Cleanup function for component unmount
     return () => {
       if (zpRef.current) {
         zpRef.current.destroy();
       }
+      stopRecording();
     };
   }, [callType, roomId, navigate]);
 
