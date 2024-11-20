@@ -20,6 +20,29 @@ const INDIAN_LANGUAGES = [
   'Assamese',
 ];
 
+const MEDICAL_SPECIALIZATIONS = [
+  'Cardiology',
+  'Neurology',
+  'Pediatrics',
+  'Oncology',
+  'Dermatology',
+  'Orthopedics',
+  'Psychiatry',
+  'Endocrinology',
+  'Gastroenterology',
+  'Nephrology',
+  'Pulmonology',
+  'Rheumatology',
+  'Hematology',
+  'Infectious Disease',
+  'General Surgery',
+  'Urology',
+  'Ophthalmology',
+  'Gynecology',
+  'Anesthesiology',
+  'Emergency Medicine'
+];
+
 export default function Signup() {
   const navigate = useNavigate();
   const [role, setRole] = useState<'patient' | 'doctor'>('patient');
@@ -44,7 +67,7 @@ export default function Signup() {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -61,7 +84,7 @@ export default function Signup() {
           formData.specialization,
           formData.licenseNumber,
           formData.hospital,
-          selectedLanguages
+          selectedLanguages,
         );
         navigate('/'); // Navigate only if no errors occur
       } catch (error) {
@@ -249,16 +272,19 @@ export default function Signup() {
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <Stethoscope className="h-5 w-5 text-gray-400" />
                     </div>
-                    <input
+                    <select
                       id="specialization"
                       name="specialization"
-                      type="text"
                       required
                       value={formData.specialization}
                       onChange={handleChange}
                       className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-rose-500 focus:border-rose-500"
-                      placeholder="Your medical specialization"
-                    />
+                    >
+                      <option value="">Select your medical specialization</option>
+                      {MEDICAL_SPECIALIZATIONS.map((spec) => (
+                        <option key={spec} value={spec}>{spec}</option>
+                      ))}
+                    </select>
                   </div>
                 </div>
 
