@@ -1,7 +1,6 @@
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 import Home from '../components/Home/Home'
-// import RoomPage from "./components/Room/Room";
 import Login from '../components/Authpages/Login'
 import Signup from '../components/Authpages/Signup'
 import Profile from '../components/Profile/Profile'
