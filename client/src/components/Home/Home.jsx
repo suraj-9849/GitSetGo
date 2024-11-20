@@ -15,12 +15,6 @@ export default function Home() {
         <p className="text-xl text-gray-600 mb-8">
           Connect with qualified doctors from the comfort of your home
         </p>
-        <button
-          onClick={() => navigate('/symptoms')}
-          className="bg-rose-600 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-rose-700 transition-colors"
-        >
-          Start Consultation
-        </button>
       </div>
 
 

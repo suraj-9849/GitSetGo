@@ -1,209 +1,160 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState } from 'react';
+import { Loader2, Upload } from 'lucide-react';
 
-const ImaggaImageAnalysis = () => {
+const HealthInsightsAnalyzer = () => {
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-  const [response, setResponse] = useState(null);
+  const [analysis, setAnalysis] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [showResults, setShowResults] = useState(false);  // New state for visibility control
 
-  // API credentials
-  const apiKey = "acc_824b3548032a8d7";
-  const apiSecret = "2f934b0070d58f0054e3c1374bbb0a24";
-  const encodedCredentials = btoa(`${apiKey}:${apiSecret}`);
-
-  // Debug useEffect to monitor response state
-  useEffect(() => {
-    if (response) {
-      console.log("Response received:", response);
-      setShowResults(true);
-    }
-  }, [response]);
-
-  const handleImageChange = (e) => {
+  const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
       setImage(file);
-      setShowResults(false); // Reset results when new image is selected
-
-      // Create preview URL
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
+      reader.onloadend = () => setImagePreview(reader.result);
       reader.readAsDataURL(file);
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log("Submit clicked"); // Debug log
-
-    if (!image) {
-      setError("Please select an image first.");
-      return;
-    }
-
+  const performAnalysis = async () => {
     setLoading(true);
-    setShowResults(false);
-    setError(null);
-
-    const formData = new FormData();
-    formData.append("image", image);
-
     try {
-      const res = await axios({
-        method: "post",
-        url: "https://api.imagga.com/v2/tags",
-        data: formData,
-        headers: {
-          Authorization: `Basic ${encodedCredentials}`,
-          "Content-Type": "multipart/form-data",
-        },
+      // Placeholder for actual analysis logic
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setAnalysis({
+        disease: "Potential Skin Condition",
+        preventionMethods: ["Regular skin checks", "Sun protection"],
+        homeRemedies: ["Moisturize", "Gentle cleansing"],
+        doctor: "Dermatologist",
+        foodToAvoid: ["Processed foods", "High sugar items"],
+        foodToEat: ["Fresh vegetables", "Lean proteins"]
       });
-
-      console.log("API Response:", res.data); // Debug log
-
-      if (res.data && res.data.result) {
-        setResponse(res.data.result);
-        setShowResults(true);
-      } else {
-        throw new Error("Invalid response format");
-      }
-    } catch (err) {
-      console.error("Error:", err);
-      setError(
-        err.response?.data?.message ||
-          err.message ||
-          "An error occurred while analyzing the image."
-      );
+    } catch (error) {
+      console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
-  // Determine recommended specialist based on tags
-  const getRecommendedSpecialist = () => {
-    if (!response || !response.tags) return "General Practitioner";
-
-    const tagToSpecialistMap = {
-      "skin": "Dermatologist",
-      "eye": "Ophthalmologist",
-      "heart": "Cardiologist",
-    };
-
-    for (const tag of response.tags) {
-      const specialist = tagToSpecialistMap[tag.tag.en.toLowerCase()];
-      if (specialist) {
-        return specialist;
-      }
-    }
-
-    return "General Practitioner";
-  };
-
-  const handleConsultSpecialist = () => {
-    const specialist = getRecommendedSpecialist();
-    console.log(`Consulting with: ${specialist}`); // Debug log
-    // Add your consultation logic here
-  };
-
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <h2 className="text-2xl font-bold mb-6 text-gray-800">
-          Image Analysis with Image
-        </h2>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden">
+        <div className="p-8 border-b border-gray-200">
+          <h1 className="text-3xl font-extrabold text-gray-800 text-center mb-4">
+            Health Insights Analyzer
+          </h1>
+          <p className="text-gray-500 text-center mb-6">
+            Upload an image to get personalized health insights
+          </p>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Select an image to analyze
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="block w-full text-sm text-gray-500
-                file:mr-4 file:py-2 file:px-4
-                file:rounded-md file:border-0
-                file:text-sm file:font-semibold
-                file:bg-blue-50 file:text-blue-700
-                hover:file:bg-blue-100"
-            />
-          </div>
-
-          {imagePreview && (
-            <div className="mt-4 flex justify-center">
-              <img
-                src={imagePreview}
-                alt="Preview"
-                className="max-h-64 rounded-lg shadow-md"
+          <div className="flex flex-col items-center space-y-4">
+            <label 
+              htmlFor="image-upload"
+              className="w-full cursor-pointer"
+            >
+              <input 
+                id="image-upload"
+                type="file" 
+                accept="image/*" 
+                className="hidden"
+                onChange={handleImageUpload}
               />
-            </div>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading || !image}
-            className={`w-full py-2 px-4 rounded-md text-white font-medium
-              ${
-                loading || !image
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700"
-              } transition-colors duration-200`}
-          >
-            {loading ? (
-              <div className="flex items-center justify-center">
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2" />
-                Analyzing...
+              <div className="
+                w-full 
+                border-2 border-dashed border-blue-200 
+                rounded-xl 
+                p-8 
+                text-center
+                hover:border-blue-400
+                transition-colors
+                group"
+              >
+                <Upload 
+                  className="mx-auto mb-4 text-blue-400 group-hover:text-blue-600" 
+                  size={48} 
+                />
+                <p className="text-gray-500 group-hover:text-blue-600">
+                  {imagePreview 
+                    ? "Image Selected" 
+                    : "Click to Upload Image or Drag and Drop"}
+                </p>
               </div>
-            ) : (
-              "Analyze Image"
+            </label>
+
+            {imagePreview && (
+              <img 
+                src={imagePreview} 
+                alt="Preview" 
+                className="max-h-64 rounded-lg shadow-md mt-4"
+              />
             )}
-          </button>
-        </form>
 
-        {error && (
-          <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-600">{error}</p>
+            <button
+              onClick={performAnalysis}
+              disabled={!imagePreview || loading}
+              className={`
+                w-full 
+                py-3 
+                rounded-lg 
+                text-white 
+                font-semibold 
+                transition-colors 
+                ${!imagePreview || loading 
+                  ? 'bg-gray-300 cursor-not-allowed' 
+                  : 'bg-blue-600 hover:bg-blue-700'
+                }`}
+            >
+              {loading ? (
+                <div className="flex items-center justify-center">
+                  <Loader2 className="mr-2 animate-spin" />
+                  Analyzing...
+                </div>
+              ) : (
+                "Get Health Insights"
+              )}
+            </button>
           </div>
-        )}
+        </div>
 
-        {/* Analysis Results Section */}
-        {showResults && response && (
-          <>
-            <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                Analysis Results
-              </h3>
-              <div className="space-y-2">
-                {response.tags &&
-                  response.tags.map((tag, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between p-2 bg-white rounded-lg shadow-sm"
-                    >
-                      <span className="font-medium text-gray-700">
-                        {tag.tag.en}
-                      </span>
-                      <span className="text-gray-500">
-                        {(tag.confidence || 0).toFixed(2)}%
-                      </span>
-                    </div>
-                  ))}
-              </div>
+        {analysis && (
+          <div className="p-8">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">
+              Analysis Results
+            </h2>
+            <div className="grid md:grid-cols-2 gap-4">
+              {Object.entries(analysis).map(([key, value]) => (
+                <div 
+                  key={key} 
+                  className="
+                    bg-gray-100 
+                    rounded-lg 
+                    p-4 
+                    shadow-sm 
+                    transform 
+                    transition 
+                    hover:scale-105"
+                >
+                  <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                    {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                  </h3>
+                  {Array.isArray(value) ? (
+                    <ul className="list-disc list-inside text-gray-600">
+                      {value.map((item, idx) => (
+                        <li key={idx}>{item}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-gray-600">{value}</p>
+                  )}
+                </div>
+              ))}
             </div>
-
-            {/* Consultation Button - Separate Section */}
-            
-          </>
+          </div>
         )}
       </div>
     </div>
   );
 };
 
-export default ImaggaImageAnalysis;
+export default HealthInsightsAnalyzer;
