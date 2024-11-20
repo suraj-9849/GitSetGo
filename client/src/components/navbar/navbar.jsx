@@ -51,6 +51,9 @@ export default function Navbar() {
             <Link to="/consultation" className="text-gray-600 hover:text-rose-600">
               Find Doctor
             </Link>
+            <Link to="/image" className="text-gray-600 hover:text-rose-600">
+              WoundDetection
+            </Link>
             <Link to="/symptoms" className="text-gray-600 hover:text-rose-600">
               Check Symptoms
             </Link>

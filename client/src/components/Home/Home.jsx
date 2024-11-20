@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Video, Stethoscope, FileText, Languages } from 'lucide-react';
-import Ask from './ask'
 export default function Home() {
   const navigate = useNavigate();
 
@@ -48,7 +47,6 @@ export default function Home() {
           <p className="text-gray-600">Services available in multiple local languages</p>
         </div>
       </div>
-       <Ask/>
       {/* How it Works */}
       <div className="bg-white rounded-2xl p-8 shadow-sm">
         <h2 className="text-3xl font-bold text-center mb-12">How It Works</h2>

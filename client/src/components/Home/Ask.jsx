@@ -13,6 +13,11 @@ const Search = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const handleConsultClick = (doctorType) => {
+    console.log(doctorType);
+    // You can add additional functionality here like navigation or opening a modal
+  };
+
   const analyzeSymptoms = async (symptomDescription) => {
     const prompt = `Analyze these symptoms and provide a medical classification. 
     Symptoms: "${symptomDescription}"
@@ -137,7 +142,7 @@ const Search = () => {
           </form>
 
           {result && (
-            <div className="mt-8">
+            <div className="mt-8 space-y-6">
               <div className="bg-green-50 rounded-lg p-6 border border-green-200">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">Analysis Results</h2>
                 <div className="space-y-4">
@@ -156,6 +161,20 @@ const Search = () => {
                     Please consult with a healthcare provider for proper diagnosis and treatment.
                   </p>
                 </div>
+              </div>
+
+              {/* New Consult Doctor Card */}
+              <div className="bg-blue-50 rounded-lg p-6 border border-blue-200">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">Ready to Consult a Doctor?</h2>
+                <p className="text-gray-700 mb-4">
+                  Based on your symptoms, we recommend consulting a {result.doctor} specialist.
+                </p>
+                <button
+                  onClick={() => handleConsultClick(result.doctor)}
+                  className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                >
+                  Consult {result.doctor} Specialist
+                </button>
               </div>
             </div>
           )}
