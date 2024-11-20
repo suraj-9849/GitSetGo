@@ -291,7 +291,7 @@ const VideoRoom = () => {
             <div className={`w-3 h-3 rounded-full ${
               connectionStatus === 'connected' ? 'bg-green-500' : 'bg-red-500'
             }`} />
-            <span className="text-black text-sm">
+            <span className="g text-sm">
               {connectionStatus === 'connected' ? 'Connected' : 'Disconnected'}
             </span>
           </div>
