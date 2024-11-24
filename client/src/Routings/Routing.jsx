@@ -5,8 +5,7 @@ import Login from '../components/Authpages/Login'
 import Signup from '../components/Authpages/Signup'
 import Profile from '../components/Profile/Profile'
 import ImaggaImageAnalysis from '../components/Ai/ImaggaImageAnalysis'
-import Ask from '../components/Home/ask';
-// import Profile from '../components/Profile/Profile'
+import Ask from '../components/Home/Ask';
 import RoomPage from '../components/Room/RoomPage'
 import VideoCam from '../components/VideoCam/VideoCam'
 
